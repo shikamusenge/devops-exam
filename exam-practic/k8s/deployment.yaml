@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exam-duhigure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: exam-duhigure
+  template:
+    metadata:
+      labels:
+        app: exam-duhigure
+    spec:
+      containers:
+        - name: exam-duhigure
+          image: examapp:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
