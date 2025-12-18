@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUHIGURE MU MIRYANGO - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1e3c72;
+            --secondary: #2a5298;
+            --accent: #00a8e8;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --sidebar-width: 280px;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+        .sidebar-brand { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .sidebar-brand h4 { font-weight: 700; font-size: 1.1rem; }
+        .nav-section-title { padding: 15px 20px 10px; font-size: 0.75rem; text-transform: uppercase; opacity: 0.6; }
+        .nav-link { display: flex; align-items: center; padding: 12px 20px; color: rgba(255,255,255,0.85); text-decoration: none; transition: all 0.3s; }
+        .nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
+        .nav-link.active { background: rgba(255,255,255,0.2); font-weight: 600; }
+        .nav-link i { width: 25px; margin-right: 12px; }
+        .main-content { margin-left: var(--sidebar-width); padding: 20px; min-height: 100vh; transition: margin 0.3s; }
+        .top-nav { background: white; padding: 15px 25px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .search-box { flex: 1; max-width: 400px; position: relative; }
+        .search-box input { width: 100%; padding: 10px 40px 10px 20px; border: 2px solid #e0e0e0; border-radius: 25px; }
+        .search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s; border-left: 4px solid var(--primary); }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-value { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
+        .stat-label { color: #6c757d; font-size: 0.9rem; }
+        .content-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card-header-custom { display: flex; justify-content: between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
+        .card-title { font-size: 1.3rem; font-weight: 600; }
+        .form-section { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .form-section-title { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 15px; }
+        .btn-custom { padding: 12px 30px; border-radius: 10px; font-weight: 600; border: none; }
+        .btn-primary-custom { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .duty-item { background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 15px; margin-bottom: 10px; }
+        .mobile-toggle { display: none; position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; z-index: 999; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-toggle { display: flex; align-items: center; justify-content: center; }
+        }
+        .toast-custom { position: fixed; top: 80px; right: 20px; z-index: 9999; }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <h4><i class="fas fa-users-cog"></i> DUHIGURE MU MIRYANGO</h4>
+            <small>Performance Contract System</small>
+        </div>
+        <div class="nav-section-title">Main</div>
+        <a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <div class="nav-section-title">Families</div>
+        <a href="#" class="nav-link" data-page="register-family"><i class="fas fa-home"></i> Register Family</a>
+        <a href="#" class="nav-link" data-page="view-families"><i class="fas fa-list"></i> View Families</a>
+        <div class="nav-section-title">Members</div>
+        <a href="#" class="nav-link" data-page="add-member"><i class="fas fa-user-plus"></i> Add Member</a>
+        <a href="#" class="nav-link" data-page="view-members"><i class="fas fa-users"></i> View Members</a>
+        <div class="nav-section-title">Imihigo (Duties)</div>
+        <a href="#" class="nav-link" data-page="family-duties"><i class="fas fa-tasks"></i> Family Duties</a>
+        <a href="#" class="nav-link" data-page="member-duties"><i class="fas fa-clipboard-check"></i> Member Duties</a>
+        <a href="#" class="nav-link" data-page="reports"><i class="fas fa-file-alt"></i> Reports</a>
+    </div>
+
+    <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+
+    <div class="main-content">
+        <div class="top-nav">
+            <div class="search-box">
+                <input type="text" placeholder="Search..." id="globalSearch">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end">
+                    <div class="fw-bold">Intore mu Ikoranabuhanga</div>
+                    <small class="text-muted">Kibungo Sector</small>
+                </div>
+                <div class="user-avatar">IT</div>
+            </div>
+        </div>
+
+        <div class="toast-custom"></div>
+        <div id="pageContent"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API = 'http://localhost:3000';
+        let currentPage = 'dashboard';
+
+        // Toast notifications
+        function showToast(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type}`;
+            toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas fa-check me-2"></i>${msg}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+            document.querySelector('.toast-custom').appendChild(toast);
+            new bootstrap.Toast(toast, {delay: 3000}).show();
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Navigation
+        function navigateTo(page) {
+            currentPage = page;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === page) link.classList.add('active');
+            });
+            loadPage(page);
+        }
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo(link.dataset.page);
+            });
+        });
+
+        document.getElementById('mobileToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Load pages
+        async function loadPage(page) {
+            const content = document.getElementById('pageContent');
+            
+            switch(page) {
+                case 'dashboard':
+                    content.innerHTML = `
+                        <h2 class="mb-4"><i class="fas fa-chart-line"></i> Dashboard Overview</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card"><div class="stat-value" id="totalFamilies">0</div><div class="stat-label">Total Families</div></div>
+                            <div class="stat-card"><div class="stat-value" id="totalMembers">0</div><div class="stat-label">Total Members</div></div>
+                            <div class="stat-card"><div class="stat-value" id="pendingDuties">0</div><div class="stat-label">Pending Duties</div></div>
+                            <div class="stat-card"><div class="stat-value" id="completedDuties">0</div><div class="stat-label">Completed</div></div>
+                        </div>
+                        <div class="content-card">
+                            <div class="card-header-custom"><div class="card-title"><i class="fas fa-clock"></i> Recent Members</div></div>
+                            <div id="recentMembers">Loading...</div>
+                        </div>
+                    `;
+                    loadStats();
+                    loadRecentMembers();
+                    break;
+
+                case 'register-family':
+                    content.innerHTML = `
+                        <h2 class="mb-4"><i class="fas fa-home"></i> Register New Family</h2>
+                        <div class="content-card">
+                            <form id="registerFamilyForm">
+                                <div class="form-section">
+                                    <div class="form-section-title"><i class="fas fa-info-circle"></i> Family Information</div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Family Name *</label>
+                                            <input type="text" class="form-control" name="family_name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Sector *</label>
+                                            <select class="form-select" name="sector" required>
+                                                <option value="Kibungo">Kibungo</option>
+                                                <option value="Bumbogo">Bumbogo</option>
+                                                <option value="Ndera">Ndera</option>
+                                                <option value="Rusororo">Rusororo</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary-custom btn-custom btn-lg"><i class="fas fa-check me-2"></i>Register Family</button>
+                            </form>
+                        </div>
+                    `;
+                    document.getElementById('registerFamilyForm').addEventListener('submit', handleRegisterFamily);
+                    break;
+
+                case 'view-families':
+                    content.innerHTML = `
+                        <h2 class="mb-4"><i class="fas fa-list"></i> All Families</h2>
+                        <div class="content-card"><div id="familiesList">Loading...</div></div>
+                    `;
+                    loadFamilies();
+                    break;
+
+                case 'add-member':
+                    content.innerHTML = `
+                        <h2 class="mb-4"><i class="fas fa-user-plus"></i> Add Family Member</h2>
+                        <div class="content-card">
+                            <form id="addMemberForm">
+                                <div class="form-section">
+                                    <div class="form-section-title"><i class="fas fa-home"></i> Select Family</div>
+                                    <select class="form-select mb-3" name="family_id" id="memberFamilySelect" required>
+                                        <option value="">Choose family...</option>
+                                    </select>
+                                </div>
+                                <div class="form-section">
+                                    <div class="form-section-title"><i class="fas fa-user"></i> Personal Information</div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Full Name *</label>
+                                            <input type="text" class="form-control" name="name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Relationship *</label>
+                                            <select class="form-select" name="relationship" required>
+                                                <option value="">Select...</option>
+                                                <option value="Father">Father</option>
+                                                <option value="Mother">Mother</option>
+                                                <option value="Son">Son</option>
+                                                <option value="Daughter">Daughter</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Email *</label>
+                                            <input type="email" class="form-control" name="email" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Phone *</label>
+                                            <input type="tel" class="form-control" name="phone" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary-custom btn-custom btn-lg"><i class="fas fa-user-check me-2"></i>Add Member</button>
+                            </form>
+                        </div>
+                    `;
+                    loadFamilyDropdown();
+                    document.getElementById('addMemberForm').addEventListener('submit', handleAddMember);
+                    break;
+
+                case 'view-members':
+                    content.innerHTML = `
+                        <h2 class="mb-4"><i class="fas fa-users"></i> All Members</h2>
+                        <div class="content-card"><div id="membersList">Loading...</div></div>
+                    `;
+                    loadMembers();
+                    break;
+
+                case 'family-duties':
+                    content.innerHTML = `
+                        <h2 class="mb-4"><i class="fas fa-tasks"></i> Family Performance Duties (Imihigo)</h2>
+                        <div class="content-card">
+                            <form id="addFamilyDutyForm" class="mb-4">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <select class="form-select" name="family_id" id="dutyFamilySelect" required>
+                                            <option value="">Select family...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <input type="text" class="form-control" name="duty" placeholder="Enter family duty (Imihigo)..." required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <button type="submit" class="btn btn-primary-custom btn-custom w-100"><i class="fas fa-plus"></i> Add</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div id="familyDutiesList">Loading...</div>
+                        </div>
+                    `;
+                    loadFamilyDropdown('dutyFamilySelect');
+                    loadFamilyDuties();
+                    document.getElementById('addFamilyDutyForm').addEventListener('submit', handleAddFamilyDuty);
+                    break;
+
+                case 'member-duties':
+                    content.innerHTML = `
+                        <h2 class="mb-4"><i class="fas fa-clipboard-check"></i> Member Performance Duties</h2>
+                        <div class="content-card">
+                            <form id="addMemberDutyForm" class="mb-4">
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <select class="form-select" name="family_id" id="memberDutyFamilySelect" required>
+                                            <option value="">Select family...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <select class="form-select" name="member_id" id="memberDutyMemberSelect" required>
+                                            <option value="">Select member...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <input type="text" class="form-control" name="duty" placeholder="Enter member duty..." required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <button type="submit" class="btn btn-primary-custom btn-custom w-100"><i class="fas fa-plus"></i> Add</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div id="memberDutiesList">Loading...</div>
+                        </div>
+                    `;
+                    loadFamilyDropdown('memberDutyFamilySelect');
+                    document.getElementById('memberDutyFamilySelect').addEventListener('change', loadMembersForDuty);
+                    loadMemberDuties();
+                    document.getElementById('addMemberDutyForm').addEventListener('submit', handleAddMemberDuty);
+                    break;
+
+                case 'reports':
+                    content.innerHTML = `
+                        <h2 class="mb-4"><i class="fas fa-file-alt"></i> Reports & Analytics</h2>
+                        <div class="content-card">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-primary-custom btn-custom w-100 p-4" onclick="generateReport('families')">
+                                        <i class="fas fa-home fa-2x d-block mb-2"></i>
+                                        <h5>Family Report</h5>
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-success btn-custom w-100 p-4" onclick="generateReport('duties')">
+                                        <i class="fas fa-tasks fa-2x d-block mb-2"></i>
+                                        <h5>Duties Report</h5>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        // API Functions
+        async function loadStats() {
+            try {
+                const [fam, mem, dut] = await Promise.all([
+                    fetch(`${API}/families`).then(r => r.json()),
+                    fetch(`${API}/members`).then(r => r.json()),
+                    fetch(`${API}/duties`).then(r => r.json())
+                ]);
+                document.getElementById('totalFamilies').textContent = fam.length;
+                document.getElementById('totalMembers').textContent = mem.length;
+                const pending = dut.filter(d => d.status === 'Pending').length;
+                const completed = dut.filter(d => d.status === 'Completed').length;
+                document.getElementById('pendingDuties').textContent = pending;
+                document.getElementById('completedDuties').textContent = completed;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadRecentMembers() {
+            try {
+                const res = await fetch(`${API}/members`);
+                const members = await res.json();
+                const recent = members.slice(-5).reverse();
+                const html = recent.length ? recent.map(m => `
+                    <div class="duty-item">
+                        <div><strong>${m.name}</strong><br><small class="text-muted">${m.relationship}</small></div>
+                        <span class="badge bg-primary">${m.email}</span>
+                    </div>
+                `).join('') : '<p class="text-muted">No members yet</p>';
+                document.getElementById('recentMembers').innerHTML = html;
+            } catch (err) {
+                document.getElementById('recentMembers').innerHTML = '<p class="text-danger">Error loading</p>';
+            }
+        }
+
+        async function loadFamilies() {
+            try {
+                const res = await fetch(`${API}/families`);
+                const families = await res.json();
+                const html = families.length ? `
+                    <table class="table">
+                        <thead><tr><th>Family Name</th><th>Sector</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            ${families.map(f => `<tr><td><strong>${f.family_name}</strong></td><td>${f.sector}</td><td><button class="btn btn-sm btn-danger" onclick="deleteFamily(${f.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                ` : '<p class="text-muted">No families registered</p>';
+                document.getElementById('familiesList').innerHTML = html;
+            } catch (err) {
+                document.getElementById('familiesList').innerHTML = '<p class="text-danger">Error loading</p>';
+            }
+        }
+
+        async function loadMembers() {
+            try {
+                const res = await fetch(`${API}/members`);
+                const members = await res.json();
+                const html = members.length ? `
+                    <table class="table">
+                        <thead><tr><th>Name</th><th>Relationship</th><th>Email</th><th>Phone</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            ${members.map(m => `<tr><td><strong>${m.name}</strong></td><td>${m.relationship}</td><td>${m.email}</td><td>${m.phone}</td><td><button class="btn btn-sm btn-danger" onclick="deleteMember(${m.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                ` : '<p class="text-muted">No members added</p>';
+                document.getElementById('membersList').innerHTML = html;
+            } catch (err) {
+                document.getElementById('membersList').innerHTML = '<p class="text-danger">Error loading</p>';
+            }
+        }
+
+        async function loadFamilyDropdown(selectId = 'memberFamilySelect') {
+            try {
+                const res = await fetch(`${API}/families`);
+                const families = await res.json();
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">Choose family...</option>' + families.map(f => `<option value="${f.id}">${f.family_name}</option>`).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadMembersForDuty(e) {
+            const familyId = e.target.value;
+            const select = document.getElementById('memberDutyMemberSelect');
+            select.innerHTML = '<option value="">Select member...</option>';
+            if (!familyId) return;
+            try {
+                const res = await fetch(`${API}/members/family/${familyId}`);
+                const members = await res.json();
+                select.innerHTML += members.map(m => `<option value="${m.id}">${m.name} (${m.relationship})</option>`).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadFamilyDuties() {
+            try {
+                const res = await fetch(`${API}/duties`);
+                const duties = await res.json();
+                const familyDuties = duties.filter(d => !d.member_id);
+                const html = familyDuties.length ? familyDuties.map(d => `
+                    <div class="duty-item">
+                        <div><strong>${d.duty}</strong><br><small class="text-muted">Family Duty</small></div>
+                        <div>
+                            <select class="form-select form-select-sm d-inline-block w-auto me-2" onchange="updateDutyStatus(${d.id}, this.value)">
+                                <option value="Pending" ${d.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="In Progress" ${d.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="Completed" ${d.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                            <button class="btn btn-sm btn-danger" onclick="deleteDuty(${d.id})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('') : '<p class="text-muted">No family duties assigned</p>';
+                document.getElementById('familyDutiesList').innerHTML = html;
+            } catch (err) {
+                document.getElementById('familyDutiesList').innerHTML = '<p class="text-danger">Error loading</p>';
+            }
+        }
+
+        async function loadMemberDuties() {
+            try {
+                const res = await fetch(`${API}/duties`);
+                const duties = await res.json();
+                const memberDuties = duties.filter(d => d.member_id);
+                const html = memberDuties.length ? memberDuties.map(d => `
+                    <div class="duty-item">
+                        <div><strong>${d.duty}</strong><br><small class="text-muted">Member Duty</small></div>
+                        <div>
+                            <select class="form-select form-select-sm d-inline-block w-auto me-2" onchange="updateDutyStatus(${d.id}, this.value)">
+                                <option value="Pending" ${d.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="In Progress" ${d.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="Completed" ${d.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                            <button class="btn btn-sm btn-danger" onclick="deleteDuty(${d.id})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('') : '<p class="text-muted">No member duties assigned</p>';
+                document.getElementById('memberDutiesList').innerHTML = html;
+            } catch (err) {
+                document.getElementById('memberDutiesList').innerHTML = '<p class="text-danger">Error loading</p>';
+            }
+        }
+
+                // Form Handlers
+                async function handleRegisterFamily(e) {
+                    e.preventDefault();
+                    const data = new FormData(e.target);
+                    try {
+                        const res = await fetch(`${API}/families`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({family_name: data.get('family_name'), sector: data.get('sector')})
+                        });
+                        if (res.ok) {
+                            showToast('Family registered successfully!');
+                            e.target.reset();
+                            navigateTo('view-families');
+                        }
+                    } catch (err) {
+                        showToast('Error registering family', 'danger');
+                    }
+                }
+        
+                async function handleAddMember(e) {
+                    e.preventDefault();
+                    const data = new FormData(e.target);
+                    try {
+                        const res = await fetch(`${API}/members`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                family_id: data.get('family_id'),
+                                name: data.get('name'),
+                                email: data.get('email'),
+                                phone: data.get('phone'),
+                                relationship: data.get('relationship')
+                            })
+                        });
+                        if (res.ok) {
+                            showToast('Member added successfully!');
+                            e.target.reset();
+                            navigateTo('view-members');
+                        }
+                    } catch (err) {
+                        showToast('Error adding member', 'danger');
+                    }
+                }
+        
+                async function handleAddFamilyDuty(e) {
+                    e.preventDefault();
+                    const data = new FormData(e.target);
+                    try {
+                        const res = await fetch(`${API}/duties`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                family_id: data.get('family_id'),
+                                duty: data.get('duty'),
+                                status: 'Pending'
+                            })
+                        });
+                        if (res.ok) {
+                            showToast('Family duty added successfully!');
+                            e.target.reset();
+                            loadFamilyDuties();
+                        }
+                    } catch (err) {
+                        showToast('Error adding duty', 'danger');
+                    }
+                }
+        
+                async function handleAddMemberDuty(e) {
+                    e.preventDefault();
+                    const data = new FormData(e.target);
+                    try {
+                        const res = await fetch(`${API}/duties`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                family_id: data.get('family_id'),
+                                member_id: data.get('member_id'),
+                                duty: data.get('duty'),
+                                status: 'Pending'
+                            })
+                        });
+                        if (res.ok) {
+                            showToast('Member duty added successfully!');
+                            e.target.reset();
+                            loadMemberDuties();
+                        }
+                    } catch (err) {
+                        showToast('Error adding duty', 'danger');
+                    }
+                }
+        
+                async function updateDutyStatus(id, status) {
+                    try {
+                        const duty = await fetch(`${API}/duties/${id}`).then(r => r.json());
+                        const res = await fetch(`${API}/duties/${id}`, {
+                            method: 'PUT',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({duty: duty.duty, status})
+                        });
+                        if (res.ok) {
+                            showToast('Duty status updated!', 'success');
+                            if (currentPage === 'family-duties') loadFamilyDuties();
+                            if (currentPage === 'member-duties') loadMemberDuties();
+                        }
+                    } catch (err) {
+                        showToast('Error updating status', 'danger');
+                    }
+                }
+        
+                async function deleteFamily(id) {
+                    if (!confirm('Delete this family and all related data?')) return;
+                    try {
+                        const res = await fetch(`${API}/families/${id}`, {method: 'DELETE'});
+                        if (res.ok) {
+                            showToast('Family deleted successfully!');
+                            loadFamilies();
+                        }
+                    } catch (err) {
+                        showToast('Error deleting family', 'danger');
+                    }
+                }
+        
+                async function deleteMember(id) {
+                    if (!confirm('Delete this member?')) return;
+                    try {
+                        const res = await fetch(`${API}/members/${id}`, {method: 'DELETE'});
+                        if (res.ok) {
+                            showToast('Member deleted successfully!');
+                            loadMembers();
+                        }
+                    } catch (err) {
+                        showToast('Error deleting member', 'danger');
+                    }
+                }
+        
+                async function deleteDuty(id) {
+                    if (!confirm('Delete this duty?')) return;
+                    try {
+                        const res = await fetch(`${API}/duties/${id}`, {method: 'DELETE'});
+                        if (res.ok) {
+                            showToast('Duty deleted successfully!');
+                            if (currentPage === 'family-duties') loadFamilyDuties();
+                            if (currentPage === 'member-duties') loadMemberDuties();
+                        }
+                    } catch (err) {
+                        showToast('Error deleting duty', 'danger');
+                    }
+                }
+        
+                function generateReport(type) {
+                    showToast(`Generating ${type} report...`, 'info');
+                    setTimeout(() => showToast(`${type} report generated successfully!`), 1500);
+                }
+        
+                // Initialize
+                loadPage('dashboard');
+            </script>
+        </body>
+        </html>
